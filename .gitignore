@@ -1,0 +1,32 @@
+# Python virtual environment
+venv/
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Build & distribution
+build/
+dist/
+*.egg-info/
+
+# Data - Do not commit large data files
+data/
+
+# ML Models & Artifacts - These are built, not stored in git
+models/
+*.pkl
+*.pth
+*.onnx
+
+# Local config
+config.ini
