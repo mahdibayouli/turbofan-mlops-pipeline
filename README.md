@@ -18,11 +18,11 @@ This is an end-to-end MLOps pipeline for predictive maintenance. The system anal
 
 3.  Create and activate a Python virtual environment:
     ```bash
-    #Linux/macOS:
+    # Linux/macOS:
     python3 -m venv venv
     source venv/bin/activate
 
-    #Windows (PowerShell):
+    # Windows (PowerShell):
     python -m venv venv
     .\venv\Scripts\activate
     ```
