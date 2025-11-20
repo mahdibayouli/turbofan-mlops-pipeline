@@ -1,3 +1,8 @@
+---
+name: "Feature issue"
+about: "Implement a new feature"
+---
+
 ## Description 
 Brief description of the goal of this issue.
 
