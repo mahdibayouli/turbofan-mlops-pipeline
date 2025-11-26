@@ -1,115 +1,96 @@
-import pandas as pd
-import numpy as np
-from sklearn.preprocessing import MinMaxScaler
-import joblib
+from __future__ import annotations
+
 import json
-import os
+import logging
+from pathlib import Path
+from typing import Sequence
 
-# --- 1. Configuration & Column Definitions ---
+import joblib
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 
-# Define paths
-DATA_PATH = 'data/CMAPSSData/train_FD001.txt'
-ARTIFACTS_DIR = 'models/' # Dir to store scaler & col info
-SCALER_PATH = os.path.join(ARTIFACTS_DIR, 'scaler.joblib')
-ARTIFACTS_INFO_PATH = os.path.join(ARTIFACTS_DIR, 'artifacts_info.json')
+from src.config import (
+    TRAIN_FD001_PATH,
+    ARTIFACTS_DIR,
+    SCALER_PATH,
+    ARTIFACTS_INFO_PATH,
+    SENSORS,
+    COLS,
+)
 
-# Define column names
-op_settings = [f'op_setting_{i+1}' for i in range(3)]
-sensors = [f'sensor_{i+1}' for i in range(21)]
-cols = ['unit_number', 'time_in_cycles'] + op_settings + sensors
+logger = logging.getLogger(__name__)
 
-# --- 2. Windowing Function ---
 
-def create_sequences(data_df: pd.DataFrame, sensor_cols: list, sequence_length: int) -> np.ndarray:
-    """
-    Transforms time-series data into sequences for the autoencoder.
+def fit_and_save_artifacts(
+    data_path: Path = TRAIN_FD001_PATH,
+    cols: Sequence[str] = COLS,
+    artifacts_dir: Path = ARTIFACTS_DIR,
+    scaler_path: Path = SCALER_PATH,
+    info_path: Path = ARTIFACTS_INFO_PATH,
+) -> None:
+    """Fit a MinMaxScaler on training data and save preprocessing artifacts.
+
+    The scaler is fit only on non-constant sensor columns. The function writes:
+
+    * ``scaler.joblib``: fitted MinMaxScaler
+    * ``artifacts_info.json``: metadata about which sensor columns to drop/scale
     
-    This function processes data per-engine.
-    
-    Args:
-        data_df (pd.DataFrame): The input DataFrame (should be scaled).
-        sensor_cols (list): List of sensor column names to use.
-        sequence_length (int): The window size.
-            
-    Returns:
-        np.ndarray: An array of sequences (samples, time_steps, features).
     """
-    sequences = []
-    
-    # Iterate over each engine unit
-    for unit_id in data_df['unit_number'].unique():
-        # Get the sensor data for this specific engine
-        unit_data = data_df[data_df['unit_number'] == unit_id][sensor_cols].values
-        
-        # Create sequences for this engine
-        for i in range(len(unit_data) - sequence_length + 1):
-            seq = unit_data[i:i + sequence_length]
-            sequences.append(seq)
-            
-    return np.array(sequences)
+    logger.info("Starting preprocessing using data at %s", data_path)
 
-# --- 3. Main Script to Fit and Save Scaler ---
+    if not data_path.is_file():
+        logger.error("Data file not found at %s", data_path)
+        raise FileNotFoundError(
+            f"Data file not found at {data_path}. "
+            "Expected 'train_FD001.txt' under 'data/CMAPSSData/'."
+        )
 
-def fit_and_save_artifacts(data_path, cols, artifacts_dir, scaler_path, info_path):
-    """
-    Fits a scaler on the training data and saves it.
-    Also identifies constant columns and saves all artifact info.
-    """
-    print("Starting preprocessing...")
-    
-    # 1. Load data
-    try:
-        df = pd.read_csv(data_path, sep=r"\s+", header=None, names=cols)
-    except FileNotFoundError:
-        print(f"Error: Data file not found at {data_path}")
-        print("Please ensure 'train_FD001.txt' is in the 'data/CMAPSSData/' directory.")
-        return
-        
-    # 2. Identify constant columns
-    sensor_df = df[sensors]
+    df = pd.read_csv(
+        data_path,
+        sep=r"\s+",
+        header=None,
+        names=list(cols),
+    )
+
+    # Identify constant columns among sensors
+    sensor_df = df.loc[:, SENSORS]
     variance = sensor_df.var()
-    # These are sensors with 0 variance, providing no info
-    cols_to_drop = variance[variance == 0].index.tolist()
-    
-    # 3. Identify columns to scale
-    # These are sensor columns that are *not* constant
-    cols_to_scale = [col for col in sensors if col not in cols_to_drop]
-    
-    print(f"Identified {len(cols_to_drop)} constant columns to drop: {cols_to_drop}")
-    print(f"Identified {len(cols_to_scale)} columns to scale.")
+    cols_to_drop = variance[variance == 0.0].index.to_list()
+    cols_to_scale = [col for col in SENSORS if col not in cols_to_drop]
 
-    # 4. Fit scaler
-    # We use MinMaxScaler.
+    logger.info("Found %d constant sensor columns to drop", len(cols_to_drop))
+    logger.info("Found %d sensor columns to scale", len(cols_to_scale))
+
+    # Fit scaler on non-constant sensors (training data only)
     scaler = MinMaxScaler()
-    
-    # Fit the scaler ONLY on the 'cols_to_scale'
-    # from the training dataset (train_FD001.txt).
-    scaler.fit(df[cols_to_scale])
-    
-    # 5. Save artifacts
-    os.makedirs(artifacts_dir, exist_ok=True)
-    
-    # Save the scaler. We use joblib, as it's more efficient 
-    # for sklearn models containing large numpy arrays.
+    scaler.fit(df.loc[:, cols_to_scale])
+
+    # Save artifacts
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
+
     joblib.dump(scaler, scaler_path)
-    print(f"\nScaler saved to: {scaler_path}")
-    
-    # Save the column info. This is CRITICAL for our API later.
-    # It needs to know which columns to drop and which to scale.
+    logger.info("Scaler saved to %s", scaler_path)
+
     artifacts_info = {
-        'cols_to_drop': cols_to_drop,
-        'cols_to_scale': cols_to_scale
+        "cols_to_drop": cols_to_drop,
+        "cols_to_scale": cols_to_scale,
     }
-    with open(info_path, 'w') as f:
+
+    info_path.parent.mkdir(parents=True, exist_ok=True)
+    with info_path.open("w", encoding="utf-8") as f:
         json.dump(artifacts_info, f, indent=4)
-    print(f"Artifacts info (column lists) saved to: {info_path}")
-    print("Preprocessing complete.")
+
+    logger.info("Artifacts metadata saved to %s", info_path)
+    logger.info("Preprocessing complete")
+
+
+def main() -> None:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s - %(message)s",
+    )
+    fit_and_save_artifacts()
+
 
 if __name__ == "__main__":
-    fit_and_save_artifacts(
-        data_path=DATA_PATH,
-        cols=cols,
-        artifacts_dir=ARTIFACTS_DIR,
-        scaler_path=SCALER_PATH,
-        info_path=ARTIFACTS_INFO_PATH
-    )
+    main()
