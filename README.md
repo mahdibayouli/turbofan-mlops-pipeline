@@ -49,7 +49,7 @@ At this stage of the project, the pipeline has two main steps:
    python -m src.preprocess
    ```
    This will create the following files under `models/`:
-   - `scaler.joblib`: fitte [`MinMaxScaler`](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html) on the useful sensor columns
+   - `scaler.joblib`: fitted [`MinMaxScaler`](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html) on the useful sensor columns
    - `artifacts_info.json`: which sensor columns to drop and which to scale
 
     These artifacts are later reused by the training script, the evaluation notebook, and the FastAPI API. 
