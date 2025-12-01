@@ -40,7 +40,7 @@ This is an end-to-end MLOps pipeline for predictive maintenance. The system anal
 At this stage of the project, the pipeline has three main steps:
 
 1. **Explore the dataset (optional, but recommended)**
-   Open the first notebook: `notebooks\01_data_exploration.ipynb`
+   Open the first notebook: `notebooks/01_data_exploration.ipynb`
    This notebook:
     * loads `data/CMAPSSData/train_FD001.txt`
     * assigns column names from the official `data/CMAPSSData/readme.txt`
