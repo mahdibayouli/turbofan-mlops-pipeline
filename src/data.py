@@ -39,7 +39,7 @@ def create_sequences(
         # num_sequences is 0 (no engine had enough cycles)
         return np.empty((0, sequence_length, len(sensor_cols)), dtype=np.float32)
 
-    return np.asarray(sequences, dtype = np.float32)
+    return np.asarray(sequences, dtype=np.float32)
 
 class TurbofanSequenceDataset(Dataset):
     """Dataset of sliding window engine sequences of shape (num_sequences, sequence_length, n_features) for model training.
