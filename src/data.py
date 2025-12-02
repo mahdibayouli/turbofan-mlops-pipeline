@@ -14,7 +14,7 @@ def create_sequences(
     sensor_cols: Sequence[str],
     sequence_length: int,
 ) -> npt.NDArray[np.float32]:
-    """Convert per engine times series (cycles) into sliding window sequences ready for model training.
+    """Convert per engine time series (cycles) into sliding window sequences ready for model training.
     
     The function groups rows by engine id (unit_number) and builds overlapping windows of fixed length over the selected sensor columns.
     
@@ -28,10 +28,10 @@ def create_sequences(
         engine_data = data_df.loc[data_df["unit_number"] == engine_id, sensor_cols].to_numpy()
         
         if len(engine_data) < sequence_length:
-            # engine does not have enough cycle for even a single window
+            # engine does not have enough cycles for even a single window
             continue
         
-        for start_idx in range(len(engine_data)-sequence_length +1):
+        for start_idx in range(len(engine_data) - sequence_length + 1):
             window = engine_data[start_idx: start_idx + sequence_length]
             sequences.append(window)
         

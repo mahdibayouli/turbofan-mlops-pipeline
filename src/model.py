@@ -46,7 +46,7 @@ class Encoder(nn.Module):
 class Decoder(nn.Module):
     """A two-layer LSTM decoder that reconstructs sequences from a context vector.
 
-    Takes the final hidden and cell states from the encoder and generates the output sequence by unrolling and LSTM over a dummy zero input, then mapping each time step back to the original feature space.
+    Takes the final hidden and cell states from the encoder and generates the output sequence by unrolling an LSTM over a dummy zero input, then mapping each time step back to the original feature space.
 
     Args:
         n_features: Number of output features per time step.
