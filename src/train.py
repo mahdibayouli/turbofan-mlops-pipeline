@@ -83,8 +83,8 @@ def train_model() -> None:
     n_features = len(cols_to_scale)
     logger.info("Number of features for model: %d", n_features)
 
-    # Restrict to healthy cycles for each engine (group by engine unit_number and only take first HEALTHY_CYCLES)
-    df_healthy = df.groupby("unit_number", as_index=False).head(HEALTHY_CYCLES) 
+    # Restrict to healthy cycles for each engine
+    df_healthy = df.groupby("unit_number", sort=False).head(HEALTHY_CYCLES) 
     logger.info("Total data shape: %s", df.shape)
     logger.info("Healthy data shape: %s", df_healthy.shape)
 

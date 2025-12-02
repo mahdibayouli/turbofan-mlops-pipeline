@@ -16,16 +16,18 @@ def create_sequences(
 ) -> npt.NDArray[np.float32]:
     """Convert per engine time series (cycles) into sliding window sequences ready for model training.
     
-    The function groups rows by engine id (unit_number) and builds overlapping windows
-    of fixed length over the selected sensor columns.
+    The function groups rows by engine id (unit_number) internally and builds overlapping
+    windows of fixed length over the selected sensor columns. Sequences from all engines
+    are concatenated into a single array.
     
     Args:
-        data_df: DataFrame containing engine sensor data with 'unit_number' column.
+        data_df: DataFrame containing one or more engines with 'unit_number' column.
         sensor_cols: List of sensor column names to include in sequences.
         sequence_length: Number of consecutive cycles in each window.
     
     Returns:
         A NumPy array of shape (num_sequences, sequence_length, n_features).
+        Engines with fewer than sequence_length cycles are skipped.
     """
     sequences = []
     
