@@ -47,7 +47,7 @@ def fit_and_save_artifacts(
 
     df = pd.read_csv(
         data_path,
-        sep=r"\s+",
+        sep=r'\s+',
         header=None,
         names=list(cols),
     )

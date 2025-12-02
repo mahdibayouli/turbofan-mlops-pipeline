@@ -12,7 +12,8 @@ __pycache__/
 .DS_Store
 
 # Jupyter Notebooks for Experimentation
-src\preprocess.ipynb
+src/preprocess.ipynb
+src/data.ipynb
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
