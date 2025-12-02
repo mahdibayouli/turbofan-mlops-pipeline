@@ -20,21 +20,18 @@ from src.config import (
     SCALER_PATH,
     ARTIFACTS_DIR,
     COLS,
+    MODEL_PATH,
+    SEQUENCE_LENGTH,
+    HEALTHY_CYCLES,
+    BATCH_SIZE,
+    N_EPOCHS,
+    LEARNING_RATE,
+    EMBEDDING_DIM,
 )
 from src.data import create_sequences, TurbofanSequenceDataset
 from src.model import Autoencoder
 
 logger = logging.getLogger(__name__)
-
-# Hyperparameters for the detector
-SEQUENCE_LENGTH = 30
-HEALTHY_CYCLES = 40
-BATCH_SIZE = 128
-N_EPOCHS = 25
-LEARNING_RATE = 1e-3
-EMBEDDING_DIM = 32
-
-MODEL_PATH = ARTIFACTS_DIR / "detector.pth"
 
 def _load_scaled_fd001() -> tuple[pd.DataFrame, list[str]]:
     """Load FD001 data and apply the fitted scaler.
@@ -64,7 +61,7 @@ def _load_scaled_fd001() -> tuple[pd.DataFrame, list[str]]:
         TRAIN_FD001_PATH,
         sep=r'\s+',
         header=None,
-        names=list(COLS),
+        names=COLS,
     )
 
     df.loc[:, cols_to_scale] = scaler.transform(df.loc[:, cols_to_scale])
@@ -86,8 +83,8 @@ def train_model() -> None:
     n_features = len(cols_to_scale)
     logger.info("Number of features for model: %d", n_features)
 
-    # Restrict to healthy cycles for each engine (group by engine unit_number and only take first HEALTHY_CYCLES)
-    df_healthy = df.groupby("unit_number", as_index=False).head(HEALTHY_CYCLES) 
+    # Restrict to healthy cycles for each engine
+    df_healthy = df.groupby("unit_number", sort=False).head(HEALTHY_CYCLES) 
     logger.info("Total data shape: %s", df.shape)
     logger.info("Healthy data shape: %s", df_healthy.shape)
 
