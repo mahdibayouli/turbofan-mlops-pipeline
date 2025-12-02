@@ -37,16 +37,21 @@ This is an end-to-end MLOps pipeline for predictive maintenance. The system anal
 
 ## Current Workflow (v0)
 
-At this stage of the project, the pipeline has three main steps:
+At this stage of the project, the pipeline has four main steps:
 
 1. **Explore the dataset (optional, but recommended)**
+
    Open the first notebook: `notebooks/01_data_exploration.ipynb`
+
    This notebook:
+
     * loads `data/CMAPSSData/train_FD001.txt`
     * assigns column names from the official `data/CMAPSSData/readme.txt`
     * checks basic statistics and missing values
     * visualizes run to failure behavior for FD001
+
 2. **Run preprocessing to create artifacts**
+
    Fit the scaler and generate preprocessing metadata:
 
    ```bash
@@ -58,7 +63,9 @@ At this stage of the project, the pipeline has three main steps:
    * `artifacts_info.json`: which sensor columns to drop and which to scale
 
     These artifacts are later reused by the training script, the evaluation notebook, and the FastAPI API.
+
 3. **Train the anomaly detector (LSTM autoencoder)**
+
    Train on healthy FD001 windows:
 
    ```bash
@@ -68,6 +75,17 @@ At this stage of the project, the pipeline has three main steps:
    This script trains a two-layer LSTM Seq2Seq autoencoder to reconstruct fixed size windows of healthy data and saves the trained weights as `models/detector.pth`.
 
    The detailed design choices for the architecture will be documented later in a dedicated `docs/model.md`
+
+4. **Evaluate the detector and set an anomaly threshold**
+
+   Run the second notebook:
+
+   ```bash
+   jupyter notebook notebooks/02_model_evaluation.ipynb
+   ```
+
+    This notebook loads the trained detector and preprocessing artifacts, computes reconstruction based anomaly scores over full FD001 lifetimes, and visualizes score evolution for sample engines.
+    It then derives a first anomaly threshold from healthy sequences and saves it as `anomaly_threshold` in `models/artifacts_info.json` for downstream use.
 
 ---
 
