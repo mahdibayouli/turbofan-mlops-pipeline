@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from typing import Tuple
 import torch
 import torch.nn as nn
 from torch import Tensor
@@ -29,7 +28,7 @@ class Encoder(nn.Module):
             batch_first=True,
         )
 
-    def forward(self, x: Tensor) -> Tuple[Tensor, Tensor]:
+    def forward(self, x: Tensor) -> tuple[Tensor, Tensor]:
         """Encode a batch of sequences.
 
         Args:
