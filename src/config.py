@@ -17,3 +17,12 @@ COLS = ["unit_number", "time_in_cycles"] + OP_SETTINGS + SENSORS
 ARTIFACTS_DIR = REPO_ROOT / "models"
 SCALER_PATH = ARTIFACTS_DIR / "scaler.joblib"
 ARTIFACTS_INFO_PATH = ARTIFACTS_DIR / "artifacts_info.json"
+MODEL_PATH = ARTIFACTS_DIR / "detector.pth"
+
+# Training hyperparameters
+SEQUENCE_LENGTH = 30
+HEALTHY_CYCLES = 40
+BATCH_SIZE = 128
+N_EPOCHS = 25
+LEARNING_RATE = 1e-3
+EMBEDDING_DIM = 32

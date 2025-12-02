@@ -20,21 +20,18 @@ from src.config import (
     SCALER_PATH,
     ARTIFACTS_DIR,
     COLS,
+    MODEL_PATH,
+    SEQUENCE_LENGTH,
+    HEALTHY_CYCLES,
+    BATCH_SIZE,
+    N_EPOCHS,
+    LEARNING_RATE,
+    EMBEDDING_DIM,
 )
 from src.data import create_sequences, TurbofanSequenceDataset
 from src.model import Autoencoder
 
 logger = logging.getLogger(__name__)
-
-# Hyperparameters for the detector
-SEQUENCE_LENGTH = 30
-HEALTHY_CYCLES = 40
-BATCH_SIZE = 128
-N_EPOCHS = 25
-LEARNING_RATE = 1e-3
-EMBEDDING_DIM = 32
-
-MODEL_PATH = ARTIFACTS_DIR / "detector.pth"
 
 def _load_scaled_fd001() -> tuple[pd.DataFrame, list[str]]:
     """Load FD001 data and apply the fitted scaler.
