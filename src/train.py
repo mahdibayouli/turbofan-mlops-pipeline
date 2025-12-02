@@ -73,7 +73,11 @@ def _load_scaled_fd001() -> tuple[pd.DataFrame, list[str]]:
 
 
 def train_model() -> None:
-    """Train the LSTM autoencoder on healthy FD001 sequences and save artifacts."""
+    """Train the LSTM autoencoder on healthy FD001 sequences and save artifacts.
+    
+    Raises:
+        ValueError: If no valid sequences can be created from the data.
+    """
     logger.info("Starting model training process.")
 
     # Load scaled data
@@ -93,6 +97,14 @@ def train_model() -> None:
         sensor_cols=cols_to_scale,
         sequence_length=SEQUENCE_LENGTH,
     )
+
+    if healthy_sequences.shape[0] == 0:
+        msg = (
+            f"No sequences created. All engines have fewer than {SEQUENCE_LENGTH} cycles. "
+            f"Consider reducing SEQUENCE_LENGTH or HEALTHY_CYCLES."
+        )
+        logger.error(msg)
+        raise ValueError(msg)
 
     logger.info("Created %d healthy sequences.", healthy_sequences.shape[0])
 
@@ -136,7 +148,7 @@ def train_model() -> None:
 
             epoch_loss += loss.item()
 
-        avg_epoch_loss = epoch_loss / max(1, len(dataloader))
+        avg_epoch_loss = epoch_loss / len(dataloader)
         train_losses.append(avg_epoch_loss)
         logger.info("Epoch %d/%d, loss: %.6f", epoch + 1, N_EPOCHS, avg_epoch_loss)
 

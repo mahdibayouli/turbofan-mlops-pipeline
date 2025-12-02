@@ -36,7 +36,7 @@ def create_sequences(
             sequences.append(window)
         
     if not sequences:
-        # num_sequences is 0 (no engine had enough cycles)
+        # num_sequences is 0 (no engine had enough cycles, i.e. all engines are too short)
         return np.empty((0, sequence_length, len(sensor_cols)), dtype=np.float32)
 
     return np.asarray(sequences, dtype=np.float32)
