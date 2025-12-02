@@ -32,9 +32,15 @@ def fit_and_save_artifacts(
 
     The scaler is fit only on non-constant sensor columns. The function writes:
 
-    * ``scaler.joblib``: fitted MinMaxScaler
-    * ``artifacts_info.json``: metadata about which sensor columns to drop/scale
+    * `scaler.joblib`: fitted MinMaxScaler
+    * `artifacts_info.json`: metadata about which sensor columns to drop/scale
     
+    Args:
+        data_path: Path to the training data file.
+        cols: List of column names for the dataset.
+        artifacts_dir: Directory to save artifacts.
+        scaler_path: Path for saving the fitted scaler.
+        info_path: Path for saving artifacts metadata JSON.
     """
     logger.info("Starting preprocessing using data at %s", data_path)
 
