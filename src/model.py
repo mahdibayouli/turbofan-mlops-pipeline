@@ -17,7 +17,7 @@ class Encoder(nn.Module):
     """
     
     def __init__(self, n_features: int, sequence_length: int, embedding_dim: int) -> None:
-        super(Encoder, self).__init__()
+        super().__init__()
         self.n_features = n_features
         self.sequence_length = sequence_length
         self.embedding_dim = embedding_dim
@@ -55,7 +55,7 @@ class Decoder(nn.Module):
     """
     
     def __init__(self, n_features: int, sequence_length: int, embedding_dim: int) -> None:
-        super(Decoder, self).__init__()
+        super().__init__()
         self.n_features = n_features
         self.sequence_length = sequence_length
         self.embedding_dim = embedding_dim
