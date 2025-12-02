@@ -41,7 +41,7 @@ At this stage of the project, the pipeline has four main steps:
 
 1. **Explore the dataset (optional, but recommended)**
 
-   Open the first notebook: `notebooks/01_data_exploration.ipynb`
+   Open `notebooks/01_data_exploration.ipynb` in your preferred notebook environment and run it top to bottom.
 
    This notebook:
 
@@ -78,11 +78,7 @@ At this stage of the project, the pipeline has four main steps:
 
 4. **Evaluate the detector and set an anomaly threshold**
 
-   Run the second notebook:
-
-   ```bash
-   jupyter notebook notebooks/02_model_evaluation.ipynb
-   ```
+   Open `notebooks/02_model_evaluation.ipynb` in your preferred notebook environment and run it top to bottom.
 
     This notebook loads the trained detector and preprocessing artifacts, computes reconstruction based anomaly scores over full FD001 lifetimes, and visualizes score evolution for sample engines.
     It then derives a first anomaly threshold from healthy sequences and saves it as `anomaly_threshold` in `models/artifacts_info.json` for downstream use.
