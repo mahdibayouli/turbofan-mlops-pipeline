@@ -61,7 +61,7 @@ def _load_scaled_fd001() -> tuple[pd.DataFrame, list[str]]:
         TRAIN_FD001_PATH,
         sep=r'\s+',
         header=None,
-        names=list(COLS),
+        names=COLS,
     )
 
     df.loc[:, cols_to_scale] = scaler.transform(df.loc[:, cols_to_scale])

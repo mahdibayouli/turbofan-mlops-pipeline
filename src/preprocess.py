@@ -55,7 +55,7 @@ def fit_and_save_artifacts(
         data_path,
         sep=r'\s+',
         header=None,
-        names=list(cols),
+        names=cols,
     )
 
     # Identify constant columns among sensors
