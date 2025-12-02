@@ -35,8 +35,6 @@ LEARNING_RATE = 1e-3
 EMBEDDING_DIM = 32
 
 MODEL_PATH = ARTIFACTS_DIR / "detector.pth"
-TRAIN_PLOT_PATH = ARTIFACTS_DIR / "training_loss.png"
-
 
 def _load_scaled_fd001() -> tuple[pd.DataFrame, list[str]]:
     """Load FD001 data and apply the fitted scaler.
